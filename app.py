@@ -21,8 +21,8 @@ def test_speed():
     with st.spinner("Testing your internet speed... 🐾"):
         tester = speedtest.Speedtest()
         tester.get_best_server()
-        download = tester.download() / 1_000_000  # Mbps
-        upload = tester.upload() / 1_000_000      # Mbps
+        download = tester.download() / 1_000_000  # Convert to Mbps
+        upload = tester.upload() / 1_000_000      # Convert to Mbps
         ping = tester.results.ping
     return ping, download, upload
 
@@ -44,6 +44,15 @@ def gauge_chart(label, value, max_value, unit, color):
     fig.update_layout(height=300, margin=dict(t=0, b=0, l=0, r=0))
     return fig
 
+# 📏 Dynamic max value for better scale
+def get_max_value(speed):
+    if speed <= 50:
+        return 100
+    elif speed <= 500:
+        return 1000
+    else:
+        return 2000
+
 # 🔘 Run Test
 if st.button("🐼 Run Speed Test"):
     ping, download, upload = test_speed()
@@ -52,9 +61,9 @@ if st.button("🐼 Run Speed Test"):
     with col1:
         st.plotly_chart(gauge_chart("Ping", ping, 150, "ms", "orange"), use_container_width=True)
     with col2:
-        st.plotly_chart(gauge_chart("Download", download, 100, "Mbps", "green"), use_container_width=True)
+        st.plotly_chart(gauge_chart("Download", download, get_max_value(download), "Mbps", "green"), use_container_width=True)
     with col3:
-        st.plotly_chart(gauge_chart("Upload", upload, 100, "Mbps", "blue"), use_container_width=True)
+        st.plotly_chart(gauge_chart("Upload", upload, get_max_value(upload), "Mbps", "blue"), use_container_width=True)
 
     st.success("✅ Test complete!")
     st.markdown(f"""
@@ -67,6 +76,6 @@ if st.button("🐼 Run Speed Test"):
 st.markdown("""
 ---
 <div style='text-align: center; font-size: 14px; color: gray;'>
-    Crafted by <strong>Codemates</strong> — Ishmeet & Aayush💻🐼
+    Crafted by <strong>Codemates</strong> — Ishmeet & Aayush 💻🐼
 </div>
 """, unsafe_allow_html=True)
